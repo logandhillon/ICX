@@ -37,7 +37,6 @@ public class C2SHandler extends Thread {
 
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
-            ICXServer.CLIENT_WRITERS.add(writer);
 
             sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, "SERVER", "Connected"));
 
@@ -53,6 +52,7 @@ public class C2SHandler extends Thread {
                             if (packet.command() != ICXPacket.Command.JOIN)
                                 throw new RuntimeException("You are not registered!");
                             ICXServer.NAME_REGISTRY.registerName(packet.sender(), addr);
+                            ICXServer.CLIENT_WRITERS.add(writer);
                             isFresh = false;
                             this.sender = packet.sender();
                         } catch (RuntimeException ex) {
