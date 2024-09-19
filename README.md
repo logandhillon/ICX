@@ -6,9 +6,12 @@ The next generation Internet Relay Chat (IRC).
 
 You will need:
 - Java 22 or newer
-- The ICX program (contains both client and server!)
+- The ICX binary (program)
 
-Simply, download the ICX program and launch it with Java!
+Steps:
+1. Download the [latest release](https://github.com/logandhillon/ICX/releases/tag/latest) and extract the files
+2. Launch the `ICX` (or `ICX.bat` on Windows) program 
+3. Get chatting!
 
 ## How does it work?
 
