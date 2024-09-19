@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import net.logandhillon.icx.server.ICXServer;
-import net.logandhillon.icx.views.LoginView;
+import net.logandhillon.icx.ui.view.LoginView;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 

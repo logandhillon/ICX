@@ -1,16 +1,16 @@
 package net.logandhillon.icx.client;
 
-import javafx.css.converter.EffectConverter;
 import net.logandhillon.icx.common.ICXPacket;
-import net.logandhillon.icx.server.C2SHandler;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 
 public class ICXClient {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICXClient.class);
@@ -44,6 +44,7 @@ public class ICXClient {
     }
 
     public static void send(ICXPacket.Command command, String content) {
+        LOG.info("Sending {} packet", command);
         writer.println(new ICXPacket(command, screenName, content).encode());
     }
 
@@ -53,5 +54,9 @@ public class ICXClient {
 
     public static InetSocketAddress getServerAddr() {
         return serverAddr;
+    }
+
+    public static boolean isConnected() {
+        return socket.isConnected();
     }
 }

@@ -39,10 +39,13 @@ public class C2SHandler extends Thread {
             writer = new PrintWriter(output, true);
             ICXServer.CLIENT_WRITERS.add(writer);
 
+            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, "SERVER", "Connected"));
+
             String msg;
             while ((msg = reader.readLine()) != null) {
                 try {
                     ICXPacket packet = ICXPacket.decode(msg);
+                    LOG.info("Received {} packet", packet.command());
 
                     // if new connection (fresh), ensure they're registered
                     if (isFresh) {
@@ -53,7 +56,7 @@ public class C2SHandler extends Thread {
                             isFresh = false;
                             this.sender = packet.sender();
                         } catch (RuntimeException ex) {
-                            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_ERR, "SERVER", ex.getMessage()));
+                            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_KICK, "SERVER", ex.getMessage()));
                             socket.close();
                         }
                     }
@@ -65,7 +68,6 @@ public class C2SHandler extends Thread {
                     switch (packet.command()) {
                         case SEND -> LOG.info("{}: '{}'", packet.sender(), packet.content());
                         case EXIT -> {
-                            ICXServer.NAME_REGISTRY.releaseName(this.sender);
                             LOG.info("Received EXIT command");
                             socket.close();
                         }
@@ -83,6 +85,7 @@ public class C2SHandler extends Thread {
             LOG.error("Error handling client", e);
         } finally {
             try {
+                ICXServer.NAME_REGISTRY.releaseName(this.sender);
                 ICXServer.CLIENT_WRITERS.remove(this.writer);
                 ICXServer.broadcast(new ICXPacket(ICXPacket.Command.EXIT, this.sender, null));
                 socket.close();

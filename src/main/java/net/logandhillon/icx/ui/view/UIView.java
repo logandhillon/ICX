@@ -1,4 +1,4 @@
-package net.logandhillon.icx.views;
+package net.logandhillon.icx.ui.view;
 
 import javafx.scene.Parent;
 
