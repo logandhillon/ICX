@@ -16,7 +16,7 @@ public class ICX extends Application {
     public void start(Stage stage) {
         ICX.stage = stage;
         LOG.info("Initializing UI views");
-        Scene scene = new Scene(new LoginView().getView());
+        Scene scene = new Scene(new LoginView());
         stage.setTitle("ICX");
         stage.setScene(scene);
         stage.show();

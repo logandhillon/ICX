@@ -15,15 +15,13 @@ import net.logandhillon.icx.client.ICXClient;
 import java.io.IOException;
 import java.net.InetAddress;
 
-public class LoginView implements UIView<VBox> {
-    private final VBox parent;
+public class LoginView extends VBox {
     private final Label status = new Label();
 
     public LoginView() {
-        parent = new VBox();
-        parent.setPadding(new Insets(16));
-        parent.setSpacing(16);
-        parent.setAlignment(Pos.TOP_CENTER);
+        setPadding(new Insets(16));
+        setSpacing(16);
+        setAlignment(Pos.TOP_CENTER);
 
         Label title = new Label("ICX");
         title.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 36));
@@ -31,7 +29,7 @@ public class LoginView implements UIView<VBox> {
         VBox wrapper = getWrapper();
         wrapper.setSpacing(8);
         wrapper.setAlignment(Pos.TOP_CENTER);
-        parent.getChildren().addAll(title, new Label("Internet Communication Exchange"), wrapper, status);
+        getChildren().addAll(title, new Label("Internet Communication Exchange"), wrapper, status);
     }
 
     private VBox getWrapper() {
@@ -51,7 +49,7 @@ public class LoginView implements UIView<VBox> {
                 }
                 ICXClient.connect(inpName.getText(), InetAddress.getByName(inpServerAddr.getText()));
                 ICX.stage.close();
-                ICX.stage.setScene(new Scene(new ChatView().getView()));
+                ICX.stage.setScene(new Scene(new ChatView()));
                 ICX.stage.show();
             } catch (IOException ex) {
                 status.setText(ex.getMessage());
@@ -59,10 +57,5 @@ public class LoginView implements UIView<VBox> {
         });
 
         return new VBox(inpName, inpServerAddr, btnJoin);
-    }
-
-    @Override
-    public VBox getView() {
-        return parent;
     }
 }

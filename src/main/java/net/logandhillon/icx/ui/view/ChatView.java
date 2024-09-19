@@ -15,13 +15,11 @@ import net.logandhillon.icx.client.ICXClient;
 import net.logandhillon.icx.common.ICXPacket;
 import net.logandhillon.icx.ui.component.MessageComponent;
 
-public class ChatView implements UIView<VBox> {
-    private final VBox parent;
+public class ChatView extends VBox {
     private final VBox log;
 
     public ChatView() {
-        parent = new VBox();
-        parent.setSpacing(8);
+        setSpacing(8);
 
         Label screenName = new Label(ICXClient.getScreenName());
         screenName.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 16));
@@ -34,7 +32,7 @@ public class ChatView implements UIView<VBox> {
         log.setPadding(new Insets(16));
         log.setSpacing(8);
 
-        parent.getChildren().addAll(header, log, getMsgBox());
+        getChildren().addAll(header, log, getMsgBox());
     }
 
     private static HBox getMsgBox() {
@@ -58,10 +56,5 @@ public class ChatView implements UIView<VBox> {
 
     public void addMessage(String sender, String message) {
         log.getChildren().add(new MessageComponent(sender, message));
-    }
-
-    @Override
-    public VBox getView() {
-        return parent;
     }
 }

@@ -51,7 +51,7 @@ public class S2CHandler extends Thread {
                             alert.setContentText("Reason: " + packet.content());
                             alert.showAndWait();
 
-                            ICX.stage.setScene(new Scene(new LoginView().getView()));
+                            ICX.stage.setScene(new Scene(new LoginView()));
                             ICX.stage.show();
                         });
                     }
