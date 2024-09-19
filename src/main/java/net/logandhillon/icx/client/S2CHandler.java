@@ -57,6 +57,7 @@ public class S2CHandler extends Thread {
                         });
                         case SEND -> Platform.runLater(() -> ChatView.postMessage(packet.sender(), packet.content()));
                         case JOIN -> Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.sender())));
+                        case EXIT -> Platform.runLater(() -> ChatView.postAlert(String.format("Farewell, %s!", packet.sender())));
                     }
                 }
             } catch (IOException e) {
