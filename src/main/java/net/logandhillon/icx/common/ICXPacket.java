@@ -5,7 +5,7 @@ public record ICXPacket(ICXPacket.Command command, String sender, String content
 
     // TODO: multimedia support when???
     public enum Command {
-        JOIN, EXIT, SEND, SRV_ERR, SRV_OK
+        JOIN, EXIT, SEND, SRV_ERR
     }
 
     public static final class ParsingException extends RuntimeException {

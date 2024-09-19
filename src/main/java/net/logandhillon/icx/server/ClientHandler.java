@@ -13,7 +13,8 @@ public class ClientHandler extends Thread {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ClientHandler.class);
     private final Socket socket;
     private final InetAddress addr;
-    private String name;
+    private PrintWriter writer;
+    private String sender;
     private boolean isFresh = true;
 
     public ClientHandler(Socket socket) {
@@ -35,13 +36,12 @@ public class ClientHandler extends Thread {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
             OutputStream output = socket.getOutputStream();
-            PrintWriter writer = new PrintWriter(output, true);
+            writer = new PrintWriter(output, true);
+            ICXServer.CLIENT_WRITERS.add(writer);
 
             String msg;
             while ((msg = reader.readLine()) != null) {
                 try {
-                    // TODO: if packet and name ownership valid, ensure packets are broadcasted to all connections
-                    //       this way all clients can see what's happening in the chat
                     ICXPacket packet = ICXPacket.decode(msg);
 
                     // if new connection (fresh), ensure they're registered
@@ -51,7 +51,7 @@ public class ClientHandler extends Thread {
                                 throw new RuntimeException("You are not registered!");
                             ICXServer.NAME_REGISTRY.registerName(packet.sender(), addr);
                             isFresh = false;
-                            this.name = packet.sender();
+                            this.sender = packet.sender();
                         } catch (RuntimeException ex) {
                             sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_ERR, "SERVER", ex.getMessage()));
                             socket.close();
@@ -59,34 +59,34 @@ public class ClientHandler extends Thread {
                     }
 
                     // throw error if name cannot be verified to that IP
-                    if (!this.name.equals(packet.sender()) || !ICXServer.NAME_REGISTRY.verifyName(packet.sender(), addr))
+                    if (!this.sender.equals(packet.sender()) || !ICXServer.NAME_REGISTRY.verifyName(packet.sender(), addr))
                         throw new RuntimeException("Failed to verify name registration");
 
-                    // TODO: handle all commands
                     switch (packet.command()) {
-                        case SEND -> LOG.info("{} said '{}'", packet.sender(), packet.content());
+                        case SEND -> LOG.info("{}: '{}'", packet.sender(), packet.content());
                         case EXIT -> {
-                            ICXServer.NAME_REGISTRY.releaseName(this.name);
-                            LOG.info("Received EXIT command, closing");
+                            ICXServer.NAME_REGISTRY.releaseName(this.sender);
+                            LOG.info("Received EXIT command");
                             socket.close();
                         }
+                        case SRV_ERR -> throw new RuntimeException("Illegal command");
                     }
 
-                    sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_OK, "SERVER", null));
+                    ICXServer.broadcast(packet);
                 } catch (RuntimeException e) {
                     sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_ERR, "SERVER", e.getMessage()));
                 }
             }
-
-            socket.close();
-            LOG.info("Disconnected");
         } catch (SocketException e) {
-            LOG.warn("Connection lost or forcibly closed");
+            LOG.warn("Connection lost or forcibly closed: {}", e.getMessage());
         } catch (IOException e) {
             LOG.error("Error handling client", e);
         } finally {
             try {
+                ICXServer.CLIENT_WRITERS.remove(this.writer);
+                ICXServer.broadcast(new ICXPacket(ICXPacket.Command.EXIT, this.sender, null));
                 socket.close();
+                LOG.info("Disconnected");
             } catch (IOException e) {
                 LOG.error("Error closing socket", e);
             }

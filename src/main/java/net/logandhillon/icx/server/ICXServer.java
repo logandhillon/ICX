@@ -1,17 +1,26 @@
 package net.logandhillon.icx.server;
 
+import net.logandhillon.icx.common.ICXPacket;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ICXServer {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICXServer.class);
     private static volatile boolean running = true;
     public static final NameRegistry NAME_REGISTRY = new NameRegistry();
+    public static final ArrayList<PrintWriter> CLIENT_WRITERS = new ArrayList<>();
+
+    public static void broadcast(ICXPacket packet) {
+        for (PrintWriter writer : CLIENT_WRITERS)
+            writer.println(packet.encode());
+    }
 
     public static void start() {
         NAME_REGISTRY.registerName("SERVER", InetAddress.getLoopbackAddress());
