@@ -55,7 +55,8 @@ public class S2CHandler extends Thread {
                             ICX.stage.setScene(new Scene(new LoginView()));
                             ICX.stage.show();
                         });
-                        case SEND -> Platform.runLater(() -> ChatView.addMessage(packet.sender(), packet.content()));
+                        case SEND -> Platform.runLater(() -> ChatView.postMessage(packet.sender(), packet.content()));
+                        case JOIN -> Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.sender())));
                     }
                 }
             } catch (IOException e) {
