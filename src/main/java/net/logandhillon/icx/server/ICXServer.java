@@ -4,14 +4,17 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ICXServer {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICXServer.class);
-    private volatile boolean running = true;
+    private static volatile boolean running = true;
+    public static final NameRegistry NAME_REGISTRY = new NameRegistry();
 
-    public void start() {
+    public static void start() {
+        NAME_REGISTRY.registerName("SERVER", InetAddress.getLoopbackAddress());
         int port = 195; // ooh, fun fact port 194 is IRC, so port 195 is a homage to that
 
         try (ServerSocket server = new ServerSocket(port)) {

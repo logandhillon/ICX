@@ -36,7 +36,7 @@ public class ICX extends Application {
     }
 
     private static void serverMain() {
-        new ICXServer().start();
+        ICXServer.start();
     }
 
     private static void printHelp() {
