@@ -41,7 +41,7 @@ public class LoginView extends VBox {
         inpServerAddr.setPromptText("Server address");
 
         Button btnJoin = new Button("Join");
-        btnJoin.setOnAction(_ -> {
+        btnJoin.setOnAction(_e -> {
             try {
                 if (inpName.getText().isBlank()) {
                     status.setText("Screen name cannot be blank");

@@ -5,8 +5,7 @@ The next generation Internet Relay Chat (IRC).
 ## Installation
 
 You will need:
-- Java 22 or newer
-- The ICX binary (program)
+- Java 21 or newer
 
 Steps:
 1. Download the [latest release](https://github.com/logandhillon/ICX/releases) and extract the files

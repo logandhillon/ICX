@@ -40,14 +40,14 @@ public class ChatView extends VBox {
         messageLog.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         messageLog.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
-        MESSAGES.heightProperty().addListener((_, _, _) -> messageLog.setVvalue(1.0));
+        MESSAGES.heightProperty().addListener((_1, _2, _3) -> messageLog.setVvalue(1.0));
 
         getChildren().addAll(header, messageLog, getMsgBox());
     }
 
     private static HBox getHeader(Label screenName) {
         Button leaveBtn = new Button("Exit");
-        leaveBtn.setOnAction(_ -> {
+        leaveBtn.setOnAction(_e -> {
             try {
                 ICX.stage.close();
 
@@ -75,7 +75,7 @@ public class ChatView extends VBox {
         msgInp.setPrefWidth(384);
 
         Button sendBtn = new Button("Send");
-        sendBtn.setOnAction(_ -> {
+        sendBtn.setOnAction(_e -> {
             ICXClient.send(ICXPacket.Command.SEND, msgInp.getText());
             msgInp.clear();
         });

@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'net.logandhillon'
-version '0.9-ALPHA'
+version '0.9.1-ALPHA'
 
 repositories {
     mavenCentral()
@@ -17,8 +17,8 @@ ext {
     junitVersion = '5.10.0'
 }
 
-sourceCompatibility = '22'
-targetCompatibility = '22'
+sourceCompatibility = '21'
+targetCompatibility = '21'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
