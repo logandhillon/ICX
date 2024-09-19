@@ -4,7 +4,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -16,7 +18,7 @@ import net.logandhillon.icx.common.ICXPacket;
 import net.logandhillon.icx.ui.component.MessageComponent;
 
 public class ChatView extends VBox {
-    private final VBox log;
+    private static final VBox MESSAGES = new VBox();
 
     public ChatView() {
         setSpacing(8);
@@ -28,11 +30,16 @@ public class ChatView extends VBox {
         header.setPadding(new Insets(16));
         header.setBackground(Background.fill(Color.LIGHTGRAY));
 
-        log = new VBox();
-        log.setPadding(new Insets(16));
-        log.setSpacing(8);
+        MESSAGES.setPadding(new Insets(16));
+        MESSAGES.setSpacing(8);
+        MESSAGES.setAlignment(Pos.BOTTOM_LEFT);
 
-        getChildren().addAll(header, log, getMsgBox());
+        ScrollPane messageLog = new ScrollPane(MESSAGES);
+        messageLog.setMinHeight(384);
+
+        MESSAGES.heightProperty().addListener((_, _, _) -> messageLog.setVvalue(1.0));
+
+        getChildren().addAll(header, messageLog, getMsgBox());
     }
 
     private static HBox getMsgBox() {
@@ -47,6 +54,17 @@ public class ChatView extends VBox {
             msgInp.clear();
         });
 
+        msgInp.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                if (event.isShiftDown()) {
+                    msgInp.appendText("\n");    // newline on SHIFT+ENTER
+                } else {
+                    sendBtn.fire();                // otherwise Send
+                    event.consume();
+                }
+            }
+        });
+
         HBox msgBox = new HBox(msgInp, sendBtn);
         msgBox.setPadding(new Insets(16));
         msgBox.setSpacing(8);
@@ -54,7 +72,7 @@ public class ChatView extends VBox {
         return msgBox;
     }
 
-    public void addMessage(String sender, String message) {
-        log.getChildren().add(new MessageComponent(sender, message));
+    public static void addMessage(String sender, String message) {
+        MESSAGES.getChildren().add(new MessageComponent(sender, message));
     }
 }

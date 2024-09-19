@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import net.logandhillon.icx.ICX;
 import net.logandhillon.icx.common.ICXPacket;
+import net.logandhillon.icx.ui.view.ChatView;
 import net.logandhillon.icx.ui.view.LoginView;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -54,6 +55,7 @@ public class S2CHandler extends Thread {
                             ICX.stage.setScene(new Scene(new LoginView()));
                             ICX.stage.show();
                         });
+                        case SEND -> Platform.runLater(() -> ChatView.addMessage(packet.sender(), packet.content()));
                     }
                 }
             } catch (IOException e) {
