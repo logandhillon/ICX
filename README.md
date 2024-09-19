@@ -9,7 +9,7 @@ You will need:
 - The ICX binary (program)
 
 Steps:
-1. Download the [latest release](https://github.com/logandhillon/ICX/releases/tag/latest) and extract the files
+1. Download the [latest release](https://github.com/logandhillon/ICX/releases) and extract the files
 2. Launch the `ICX` (or `ICX.bat` on Windows) program 
 3. Get chatting!
 
