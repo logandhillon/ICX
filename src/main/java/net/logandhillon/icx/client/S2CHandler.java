@@ -61,7 +61,8 @@ public class S2CHandler extends Thread {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                LOG.error(e);
+                return;
             }
         }
     }

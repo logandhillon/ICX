@@ -2,18 +2,20 @@ package net.logandhillon.icx.ui.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import net.logandhillon.icx.ICX;
 import net.logandhillon.icx.client.ICXClient;
 import net.logandhillon.icx.common.ICXPacket;
 import net.logandhillon.icx.ui.component.MessageAlertComponent;
 import net.logandhillon.icx.ui.component.MessageComponent;
+
+import java.io.IOException;
 
 public class ChatView extends VBox {
     private static final VBox MESSAGES = new VBox();
@@ -25,7 +27,7 @@ public class ChatView extends VBox {
         Label screenName = new Label(ICXClient.getScreenName());
         screenName.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 16));
 
-        HBox header = new HBox(new VBox(screenName, new Label(ICXClient.getServerAddr().getHostString())));
+        HBox header = getHeader(screenName);
         header.setPadding(new Insets(16));
         header.setBackground(Background.fill(Color.LIGHTGRAY));
 
@@ -41,6 +43,30 @@ public class ChatView extends VBox {
         MESSAGES.heightProperty().addListener((_, _, _) -> messageLog.setVvalue(1.0));
 
         getChildren().addAll(header, messageLog, getMsgBox());
+    }
+
+    private static HBox getHeader(Label screenName) {
+        Button leaveBtn = new Button("Exit");
+        leaveBtn.setOnAction(_ -> {
+            try {
+                ICX.stage.close();
+
+                ICXClient.disconnect();
+                MESSAGES.getChildren().clear();
+
+                ICX.stage.setScene(new Scene(new LoginView()));
+                ICX.stage.show();
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to disconnect: " + e.getMessage());
+                alert.showAndWait();
+            }
+
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        return new HBox(new VBox(screenName, new Label(ICXClient.getServerAddr().getHostString())), spacer, leaveBtn);
     }
 
     private static HBox getMsgBox() {
