@@ -44,7 +44,7 @@ public class ICXServer {
                     Socket client = server.accept();
                     if (!running) break;
 
-                    ClientHandler handler = new ClientHandler(client);
+                    C2SHandler handler = new C2SHandler(client);
                     handler.start();
                 } catch (IOException e) {
                     if (running) LOG.error("Server exception: ", e);

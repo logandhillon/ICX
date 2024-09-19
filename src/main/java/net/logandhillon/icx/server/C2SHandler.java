@@ -9,15 +9,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class ClientHandler extends Thread {
-    private static final Logger LOG = LoggerContext.getContext().getLogger(ClientHandler.class);
+public class C2SHandler extends Thread {
+    private static final Logger LOG = LoggerContext.getContext().getLogger(C2SHandler.class);
     private final Socket socket;
     private final InetAddress addr;
     private PrintWriter writer;
     private String sender;
     private boolean isFresh = true;
 
-    public ClientHandler(Socket socket) {
+    public C2SHandler(Socket socket) {
         this.socket = socket;
         this.addr = socket.getInetAddress();
         this.setName("CONN@" + addr);
