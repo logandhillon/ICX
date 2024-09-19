@@ -44,7 +44,7 @@ public class C2SHandler extends Thread {
             while ((msg = reader.readLine()) != null) {
                 try {
                     ICXPacket packet = ICXPacket.decode(msg);
-                    LOG.info("Received {} packet", packet.command());
+                    LOG.debug("Received {} packet", packet.command());
 
                     // if new connection (fresh), ensure they're registered
                     if (isFresh) {

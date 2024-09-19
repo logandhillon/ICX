@@ -39,7 +39,8 @@ public class S2CHandler extends Thread {
                 String msg;
                 if ((msg = reader.readLine()) != null) {
                     ICXPacket packet = ICXPacket.decode(msg);
-                    LOG.info(packet);
+                    LOG.debug("Incoming: {}", packet);
+
                     switch (packet.command()) {
                         case SRV_KICK -> Platform.runLater(() -> {
                             ICX.stage.close();

@@ -44,7 +44,7 @@ public class ICXClient {
     }
 
     public static void send(ICXPacket.Command command, String content) {
-        LOG.info("Sending {} packet", command);
+        LOG.debug("Sending {} packet", command);
         writer.println(new ICXPacket(command, screenName, content).encode());
     }
 
