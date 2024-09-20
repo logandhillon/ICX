@@ -9,8 +9,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import net.logandhillon.icx.ICX;
 import net.logandhillon.icx.client.ICXClient;
+import net.logandhillon.icx.ui.UI;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -48,9 +48,7 @@ public class LoginView extends VBox {
                     return;
                 }
                 ICXClient.connect(inpName.getText(), InetAddress.getByName(inpServerAddr.getText()));
-                ICX.stage.close();
-                ICX.stage.setScene(new Scene(new ChatView()));
-                ICX.stage.show();
+                UI.reloadScene(new Scene(new ChatView()));
             } catch (IOException ex) {
                 status.setText(ex.getMessage());
             }

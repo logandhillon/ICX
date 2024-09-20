@@ -9,9 +9,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import net.logandhillon.icx.ICX;
 import net.logandhillon.icx.client.ICXClient;
 import net.logandhillon.icx.common.ICXPacket;
+import net.logandhillon.icx.ui.UI;
 import net.logandhillon.icx.ui.component.MessageAlertComponent;
 import net.logandhillon.icx.ui.component.MessageComponent;
 
@@ -47,21 +47,15 @@ public class ChatView extends VBox {
 
     private static HBox getHeader(Label screenName) {
         Button leaveBtn = new Button("Exit");
-        leaveBtn.setOnAction(_e -> {
+        leaveBtn.setOnAction(_e -> UI.reloadScene(new Scene(new LoginView()), () -> {
             try {
-                ICX.stage.close();
-
                 ICXClient.disconnect();
-                MESSAGES.getChildren().clear();
-
-                ICX.stage.setScene(new Scene(new LoginView()));
-                ICX.stage.show();
             } catch (IOException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to disconnect: " + e.getMessage());
                 alert.showAndWait();
             }
-
-        });
+            MESSAGES.getChildren().clear();
+        }));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

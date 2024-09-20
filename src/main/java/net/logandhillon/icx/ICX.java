@@ -1,26 +1,12 @@
 package net.logandhillon.icx;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import net.logandhillon.icx.server.ICXServer;
-import net.logandhillon.icx.ui.view.LoginView;
+import net.logandhillon.icx.ui.UI;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-public class ICX extends Application {
+public class ICX {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICX.class);
-    public static Stage stage;
-
-    @Override
-    public void start(Stage stage) {
-        ICX.stage = stage;
-        LOG.info("Initializing UI views");
-        Scene scene = new Scene(new LoginView());
-        stage.setTitle("ICX");
-        stage.setScene(scene);
-        stage.show();
-    }
 
     public static void main(String[] args) {
         boolean isServer = false;
@@ -31,14 +17,11 @@ public class ICX extends Application {
             }
 
         if (isServer) serverMain();
-        else clientMain();
+        else UI.startClient();
         System.exit(0);
     }
 
-    private static void clientMain() {
-        LOG.info("Starting ICX client");
-        launch();
-    }
+
 
     private static void serverMain() {
         LOG.info("Starting ICX server");

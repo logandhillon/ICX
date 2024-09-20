@@ -3,8 +3,8 @@ package net.logandhillon.icx.client;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import net.logandhillon.icx.ICX;
 import net.logandhillon.icx.common.ICXPacket;
+import net.logandhillon.icx.ui.UI;
 import net.logandhillon.icx.ui.view.ChatView;
 import net.logandhillon.icx.ui.view.LoginView;
 import org.apache.logging.log4j.Logger;
@@ -43,18 +43,13 @@ public class S2CHandler extends Thread {
                     LOG.debug("Incoming: {}", packet);
 
                     switch (packet.command()) {
-                        case SRV_KICK -> Platform.runLater(() -> {
-                            ICX.stage.close();
-
+                        case SRV_KICK -> Platform.runLater(() -> UI.reloadScene(new Scene(new LoginView()), () -> {
                             Alert alert = new Alert(Alert.AlertType.WARNING);
                             alert.setTitle("Kicked from server");
                             alert.setHeaderText("You have been kicked from " + ICXClient.getServerAddr());
                             alert.setContentText("Reason: " + packet.content());
                             alert.showAndWait();
-
-                            ICX.stage.setScene(new Scene(new LoginView()));
-                            ICX.stage.show();
-                        });
+                        }));
                         case SEND -> Platform.runLater(() -> ChatView.postMessage(packet.sender(), packet.content()));
                         case JOIN -> Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.sender())));
                         case EXIT -> Platform.runLater(() -> ChatView.postAlert(String.format("Farewell, %s!", packet.sender())));
