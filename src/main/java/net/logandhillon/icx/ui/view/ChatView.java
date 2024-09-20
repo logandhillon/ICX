@@ -9,12 +9,16 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import net.logandhillon.icx.client.ICXClient;
+import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
 import net.logandhillon.icx.ui.UI;
 import net.logandhillon.icx.ui.component.MessageAlertComponent;
 import net.logandhillon.icx.ui.component.MessageComponent;
+import net.logandhillon.icx.ui.component.MultimediaComponent;
 
+import java.io.File;
 import java.io.IOException;
 
 public class ChatView extends VBox {
@@ -64,11 +68,21 @@ public class ChatView extends VBox {
     }
 
     private static HBox getMsgBox() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select file to upload");
+
+        Button uploadBtn = new Button("+");
+        uploadBtn.setOnAction(_e -> {
+            File f = chooser.showOpenDialog(UI.stage);
+            ICXClient.uploadFile(f);
+        });
+
         TextField msgInp = new TextField();
         msgInp.setPromptText("Enter a message!");
         msgInp.setPrefWidth(384);
 
         Button sendBtn = new Button("Send");
+        sendBtn.setMinWidth(64);
         sendBtn.setOnAction(_e -> {
             ICXClient.send(ICXPacket.Command.SEND, msgInp.getText());
             msgInp.clear();
@@ -81,7 +95,7 @@ public class ChatView extends VBox {
             }
         });
 
-        HBox msgBox = new HBox(msgInp, sendBtn);
+        HBox msgBox = new HBox(uploadBtn, msgInp, sendBtn);
         msgBox.setPadding(new Insets(16));
         msgBox.setSpacing(8);
         msgBox.setAlignment(Pos.CENTER_LEFT);
@@ -90,6 +104,10 @@ public class ChatView extends VBox {
 
     public static void postMessage(String sender, String message) {
         MESSAGES.getChildren().add(new MessageComponent(sender, message));
+    }
+
+    public static void postMMP(String sender, ICXMultimediaPayload payload) {
+        MESSAGES.getChildren().add(new MultimediaComponent(sender, payload));
     }
 
     public static void postAlert(String alert) {

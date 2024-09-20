@@ -3,6 +3,7 @@ package net.logandhillon.icx.client;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
 import net.logandhillon.icx.ui.UI;
 import net.logandhillon.icx.ui.view.ChatView;
@@ -40,7 +41,7 @@ public class S2CHandler extends Thread {
                 String msg;
                 if ((msg = reader.readLine()) != null) {
                     ICXPacket packet = ICXPacket.decode(msg);
-                    LOG.debug("Incoming: {}", packet);
+                    LOG.debug("Incoming {} packet from {}", packet.command(), packet.sender());
 
                     switch (packet.command()) {
                         case SRV_KICK -> Platform.runLater(() -> UI.reloadScene(new Scene(new LoginView()), () -> {
@@ -51,6 +52,7 @@ public class S2CHandler extends Thread {
                             alert.showAndWait();
                         }));
                         case SEND -> Platform.runLater(() -> ChatView.postMessage(packet.sender(), packet.content()));
+                        case UPLOAD -> Platform.runLater(() -> ChatView.postMMP(packet.sender(), ICXMultimediaPayload.decode(packet.content())));
                         case JOIN -> Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.sender())));
                         case EXIT -> Platform.runLater(() -> ChatView.postAlert(String.format("Farewell, %s!", packet.sender())));
                     }

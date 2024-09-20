@@ -1,5 +1,6 @@
 package net.logandhillon.icx.server;
 
+import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -67,9 +68,12 @@ public class C2SHandler extends Thread {
 
                     switch (packet.command()) {
                         case SEND -> {
-                            if (packet.content().isBlank()) throw new RuntimeException("Message content cannot be blank");
+                            if (packet.content().isBlank())
+                                throw new RuntimeException("Message content cannot be blank");
                             LOG.info("{}: '{}'", packet.sender(), packet.content());
                         }
+                        case UPLOAD ->
+                                ICXMultimediaPayload.parseOrThrow(packet.content()); // verify packet integrity or throw
                         case EXIT -> {
                             LOG.info("Received EXIT command");
                             socket.close();

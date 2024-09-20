@@ -1,13 +1,11 @@
 package net.logandhillon.icx.client;
 
+import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -46,6 +44,15 @@ public class ICXClient {
     public static void send(ICXPacket.Command command, String content) {
         LOG.debug("Sending {} packet", command);
         writer.println(new ICXPacket(command, screenName, content).encode());
+    }
+
+    public static void uploadFile(File file) {
+        LOG.debug("Uploading {}", file.getName());
+        try {
+            send(ICXPacket.Command.UPLOAD, ICXMultimediaPayload.fromFile(file).encode());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String getScreenName() {

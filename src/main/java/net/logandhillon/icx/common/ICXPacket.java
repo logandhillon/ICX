@@ -6,9 +6,9 @@ import java.util.Base64;
 public record ICXPacket(ICXPacket.Command command, String sender, String content) {
     private static final String VER = "ICX/0.9";
 
-    // TODO: multimedia support when???
     public enum Command {
-        JOIN, EXIT, SEND, SRV_ERR, SRV_HELLO, SRV_KICK
+        JOIN, EXIT, SEND, UPLOAD,
+        SRV_ERR, SRV_HELLO, SRV_KICK
     }
 
     public static final class ParsingException extends RuntimeException {

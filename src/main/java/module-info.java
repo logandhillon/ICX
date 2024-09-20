@@ -4,5 +4,7 @@ module net.logandhillon.icx {
     requires java.desktop;
 
     exports net.logandhillon.icx;
+    exports net.logandhillon.icx.server;
+    exports net.logandhillon.icx.common;
     exports net.logandhillon.icx.ui to javafx.graphics;
 }

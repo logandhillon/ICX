@@ -10,7 +10,7 @@ import net.logandhillon.icx.client.ICXClient;
 import java.util.Objects;
 
 public class MessageComponent extends VBox {
-    private static String lastSender = null;
+    protected static String lastSender = null;
 
     public MessageComponent(String sender, String message) {
         super();
