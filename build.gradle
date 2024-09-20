@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'net.logandhillon'
-version '0.9.3-ALPHA'
+version '0.9.4-ALPHA'
 
 repositories {
     mavenCentral()

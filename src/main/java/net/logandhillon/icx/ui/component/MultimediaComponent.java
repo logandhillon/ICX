@@ -5,8 +5,11 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -16,6 +19,7 @@ import net.logandhillon.icx.client.ICXClient;
 import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.ui.UI;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,11 +38,27 @@ public class MultimediaComponent extends VBox {
         Pos alignment = sender.equals(ICXClient.getScreenName()) ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT;
 
         getChildren().add(switch (mmp.fileType()) {
+            case IMAGE -> new ImagePreviewComponent(mmp.content());
             default -> new FileDownloadComponent(mmp.filename(), mmp.content(), alignment);
         });
 
         MessageComponent.lastSender = sender;
         setAlignment(alignment);
+    }
+
+    private static class ImagePreviewComponent extends Pane {
+        public ImagePreviewComponent(byte[] content) {
+            setBackground(Background.fill(Paint.valueOf("#dedede")));
+            setMaxWidth(192);
+
+            ByteArrayInputStream stream = new ByteArrayInputStream(content);
+            ImageView image = new ImageView(new Image(stream));
+
+            image.setFitWidth(192);
+            image.setPreserveRatio(true);
+
+            getChildren().add(image);
+        }
     }
 
     private static class FileDownloadComponent extends HBox {
