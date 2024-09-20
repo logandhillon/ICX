@@ -21,8 +21,6 @@ public class ICX {
         System.exit(0);
     }
 
-
-
     private static void serverMain() {
         LOG.info("Starting ICX server");
         ICXServer.start();

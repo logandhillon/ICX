@@ -9,7 +9,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 
 public class UI extends Application {
     private static final Logger LOG = LoggerContext.getContext().getLogger(UI.class);
-    public static Stage stage;
+    private static Stage stage;
 
     @Override
     public void start(Stage stage) {
