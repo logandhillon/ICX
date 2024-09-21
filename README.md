@@ -2,6 +2,9 @@
 
 The next generation Internet Relay Chat (IRC).
 
+<img src="/docs/images/ICX-0.9.5-preview1.png" width="384" alt="Screenshot of ICX client"/>
+<sup>Preview of an ICX chatroom, showcasing E2E encryption, file uploading, and image support.</sup>
+
 ## Installation
 
 You will need:
