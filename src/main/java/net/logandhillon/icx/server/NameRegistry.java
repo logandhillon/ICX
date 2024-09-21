@@ -17,6 +17,7 @@ public class NameRegistry {
     }
 
     public void releaseName(String name) {
+        if (name == null) return;
         LOG.info("Releasing '{}'", name);
         REGISTRY.remove(name);
     }

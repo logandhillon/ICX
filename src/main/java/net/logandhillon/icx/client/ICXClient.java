@@ -5,26 +5,56 @@ import net.logandhillon.icx.common.ICXPacket;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 public class ICXClient {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICXClient.class);
     private static String screenName;
     private static InetSocketAddress serverAddr;
-    private static Socket socket;
+    private static SSLSocket socket;
     private static PrintWriter writer;
     private static BufferedReader reader;
+
+    // trust all certificates
+    private static final TrustManager[] TRUST_MANAGER = new TrustManager[]{
+            new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }
+    };
 
     public static void connect(String _screenName, InetAddress _serverAddr) throws IOException {
         screenName = _screenName;
         serverAddr = new InetSocketAddress(_serverAddr, 195);
 
         LOG.info("Connecting to {} as {}", serverAddr, screenName);
-        socket = new Socket();
+
+        try {
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, TRUST_MANAGER, new SecureRandom());
+            socket = (SSLSocket) context.getSocketFactory().createSocket();
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
         socket.connect(serverAddr, 5000);
+
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 

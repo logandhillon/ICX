@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'net.logandhillon'
-version '0.9.4-ALPHA'
+version '0.9.5-ALPHA'
 
 repositories {
     mavenCentral()
@@ -44,6 +44,16 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+gradle.projectsLoaded {
+    def runDir = file("$rootDir/run")
+    def clientDir = file("$runDir/client")
+    def serverDir = file("$runDir/server")
+
+    if (!runDir.exists()) runDir.mkdirs()
+    if (!clientDir.exists()) clientDir.mkdirs()
+    if (!serverDir.exists()) serverDir.mkdirs()
 }
 
 jlink {

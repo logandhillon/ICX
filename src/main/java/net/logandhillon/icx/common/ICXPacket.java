@@ -21,7 +21,7 @@ public record ICXPacket(ICXPacket.Command command, String sender, String content
         return Base64.getEncoder().encodeToString(String.format("ICX/0.9 %s$%s$%s", command, sender, content).getBytes(StandardCharsets.UTF_8));
     }
 
-    public static ICXPacket decode(String b64) {
+    public static ICXPacket decode(String b64) throws IllegalArgumentException {
         String s = new String(Base64.getDecoder().decode(b64));
 
         String[] parts = s.split("\\$", 3);

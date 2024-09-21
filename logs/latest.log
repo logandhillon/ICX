@@ -1,0 +1,16 @@
+[22:04:50] [main/INFO] (UI) Starting ICX client
+[22:04:50] [JavaFX Application Thread/INFO] (UI) Initializing UI views
+[22:04:57] [JavaFX Application Thread/INFO] (ICXClient) Connecting to localhost/127.0.0.1:195 as logan
+[22:04:57] [S2C-Handler/INFO] (S2CHandler) Started
+[22:04:57] [JavaFX Application Thread/DEBUG] (ICXClient) Sending JOIN packet
+[22:04:57] [S2C-Handler/DEBUG] (S2CHandler) Incoming SRV_HELLO packet from SERVER
+[22:04:57] [S2C-Handler/DEBUG] (S2CHandler) Incoming JOIN packet from logan
+[22:05:01] [JavaFX Application Thread/DEBUG] (ICXClient) Sending SEND packet
+[22:05:01] [S2C-Handler/DEBUG] (S2CHandler) Incoming SEND packet from logan
+[22:05:19] [S2C-Handler/DEBUG] (S2CHandler) Incoming JOIN packet from the opps
+[22:05:23] [S2C-Handler/DEBUG] (S2CHandler) Incoming SEND packet from the opps
+[22:05:24] [S2C-Handler/DEBUG] (S2CHandler) Incoming EXIT packet from the opps
+[22:05:53] [JavaFX Application Thread/DEBUG] (ICXClient) Uploading Sad Bluemoji.png
+[22:05:53] [JavaFX Application Thread/DEBUG] (ICXClient) Sending UPLOAD packet
+[22:05:53] [S2C-Handler/DEBUG] (S2CHandler) Incoming UPLOAD packet from logan
+[22:07:03] [Thread-4/INFO] (S2CHandler) Shutdown hook triggered. Stopping S2C(IN) handler...

@@ -49,17 +49,19 @@ public class ChatView extends VBox {
         getChildren().addAll(header, messageLog, getMsgBox());
     }
 
+    public static void exitRoom() {
+        try {
+            ICXClient.disconnect();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to disconnect: " + e.getMessage());
+            alert.showAndWait();
+        }
+        MESSAGES.getChildren().clear();
+    }
+
     private static HBox getHeader(Label screenName) {
         Button leaveBtn = new Button("Exit");
-        leaveBtn.setOnAction(_e -> UI.reloadScene(new Scene(new LoginView()), () -> {
-            try {
-                ICXClient.disconnect();
-            } catch (IOException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to disconnect: " + e.getMessage());
-                alert.showAndWait();
-            }
-            MESSAGES.getChildren().clear();
-        }));
+        leaveBtn.setOnAction(_e -> UI.reloadScene(new Scene(new LoginView()), ChatView::exitRoom));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

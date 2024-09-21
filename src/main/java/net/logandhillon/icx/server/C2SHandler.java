@@ -89,7 +89,7 @@ public class C2SHandler extends Thread {
         } catch (SocketException e) {
             LOG.warn("Connection lost or forcibly closed: {}", e.getMessage());
         } catch (IOException e) {
-            LOG.error("Error handling client", e);
+            LOG.error("Error handling client: {}", e.getMessage());
         } finally {
             try {
                 ICXServer.NAME_REGISTRY.releaseName(this.sender);
