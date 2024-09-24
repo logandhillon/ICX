@@ -9,6 +9,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
@@ -71,8 +72,11 @@ public class ICXServer {
                 }
             }
             LOG.info("Server stopped");
+        } catch (BindException e) {
+            LOG.fatal("ICX port (195) is already in use or cannot be accessed.");
+            System.exit(2);
         } catch (IOException e) {
-            LOG.error("Server exception: ", e);
+            LOG.fatal("Unknown server exception: ", e);
         }
     }
 }

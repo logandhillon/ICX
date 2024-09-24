@@ -15,6 +15,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.Optional;
 
 public class S2CHandler extends Thread {
@@ -64,37 +65,33 @@ public class S2CHandler extends Thread {
                     }
                 }
             } catch (SSLException e) {
-                LOG.warn("Secure connection failed (likely server fault): {}", e.getMessage());
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, e.getMessage() + "\nThis is likely the server's fault.");
-                    alert.setHeaderText("Secure connection failed");
-
-                    ButtonType ignoreButton = new ButtonType("Ignore");
-                    ButtonType exitButton = new ButtonType("Exit");
-                    alert.getButtonTypes().setAll(ignoreButton, exitButton);
-
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() == exitButton) {
-                        UI.reloadScene(new Scene(new LoginView()), ChatView::exitRoom);
-                    }
-                });
+                showError("An error disrupted your connection: " + e.getMessage(), "Server SSL Error");
+                return;
+            } catch (SocketException e) {
+                if (e.getMessage().equals("Socket closed")) return;
+                showError("An error disrupted your connection: " + e.getMessage(), "Connection Error");
                 return;
             } catch (Exception e) {
-                LOG.warn("Failed to parse incoming packet: {}", e.getMessage());
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Failed to parse incoming packet: " + e.getMessage());
-
-                    ButtonType ignoreButton = new ButtonType("Ignore");
-                    ButtonType exitButton = new ButtonType("Exit");
-                    alert.getButtonTypes().setAll(ignoreButton, exitButton);
-
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() == exitButton) {
-                        UI.reloadScene(new Scene(new LoginView()), ChatView::exitRoom);
-                    }
-                });
+                showError("Failed to parse incoming packet: " + e.getMessage(), "Unknown Error");
                 return;
             }
         }
+    }
+
+    private static void showError(String error, String cause) {
+        LOG.warn(error);
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING, error);
+            alert.setHeaderText(cause);
+
+            ButtonType ignoreButton = new ButtonType("Ignore");
+            ButtonType exitButton = new ButtonType("Exit");
+            alert.getButtonTypes().setAll(ignoreButton, exitButton);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == exitButton) {
+                UI.reloadScene(new Scene(new LoginView()), ChatView::exitRoom);
+            }
+        });
     }
 }
