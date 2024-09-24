@@ -12,6 +12,7 @@ import net.logandhillon.icx.ui.view.LoginView;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
+import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
@@ -62,6 +63,22 @@ public class S2CHandler extends Thread {
                                 Platform.runLater(() -> ChatView.postAlert(String.format("Farewell, %s!", packet.sender())));
                     }
                 }
+            } catch (SSLException e) {
+                LOG.warn("Secure connection failed (likely server fault): {}", e.getMessage());
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, e.getMessage() + "\nThis is likely the server's fault.");
+                    alert.setHeaderText("Secure connection failed");
+
+                    ButtonType ignoreButton = new ButtonType("Ignore");
+                    ButtonType exitButton = new ButtonType("Exit");
+                    alert.getButtonTypes().setAll(ignoreButton, exitButton);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == exitButton) {
+                        UI.reloadScene(new Scene(new LoginView()), ChatView::exitRoom);
+                    }
+                });
+                return;
             } catch (Exception e) {
                 LOG.warn("Failed to parse incoming packet: {}", e.getMessage());
                 Platform.runLater(() -> {

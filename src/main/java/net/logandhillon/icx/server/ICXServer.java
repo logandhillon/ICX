@@ -10,7 +10,6 @@ import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class ICXServer {
@@ -21,12 +20,16 @@ public class ICXServer {
     public static final ServerProperties PROPERTIES;
 
     static {
+        ServerProperties properties = null;
         try {
-            PROPERTIES = new ServerProperties();
+            properties = new ServerProperties();
         } catch (Exception e) {
             LOG.fatal("ICX server could not be started: {}", e.getMessage());
-            throw new RuntimeException(e);
+            LOG.info("Starting server configurator tool");
+            ServerConfigurator.launch();
+            System.exit(0);
         }
+        PROPERTIES = properties;
     }
 
     public static void broadcast(ICXPacket packet) {
