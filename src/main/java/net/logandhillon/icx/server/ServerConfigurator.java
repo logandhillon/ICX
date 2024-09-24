@@ -1,5 +1,6 @@
 package net.logandhillon.icx.server;
 
+import org.apache.logging.log4j.core.jmx.Server;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
@@ -54,7 +55,7 @@ public class ServerConfigurator {
 
         // save server.properties
         System.out.print("Saving server configuration to disk... ");
-        try (FileOutputStream fos = new FileOutputStream("server.properties")) {
+        try (FileOutputStream fos = new FileOutputStream(ServerProperties.FILENAME)) {
             properties.store(fos, "Auto-generated ICX server configuration");
             System.out.println("[OK]");
         } catch (IOException e) {

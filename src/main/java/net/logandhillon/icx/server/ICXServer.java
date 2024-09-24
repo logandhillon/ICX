@@ -23,7 +23,7 @@ public class ICXServer {
     static {
         ServerProperties properties = null;
         try {
-            properties = new ServerProperties();
+            properties = ServerProperties.fromDisk();
         } catch (Exception e) {
             LOG.fatal("ICX server could not be started: {}", e.getMessage());
             LOG.info("Starting server configurator tool");
@@ -42,8 +42,8 @@ public class ICXServer {
         NAME_REGISTRY.registerName("SERVER", InetAddress.getLoopbackAddress());
         int port = 195; // ooh, fun fact port 194 is IRC, so port 195 is a homage to that
 
-        System.setProperty("javax.net.ssl.keyStore", ICXServer.PROPERTIES.keystoreFile);
-        System.setProperty("javax.net.ssl.keyStorePassword", ICXServer.PROPERTIES.keystorePassword);
+        System.setProperty("javax.net.ssl.keyStore", ICXServer.PROPERTIES.keystoreFile());
+        System.setProperty("javax.net.ssl.keyStorePassword", ICXServer.PROPERTIES.keystorePassword());
 
         SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 

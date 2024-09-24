@@ -6,24 +6,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ServerProperties {
-    public final String keystoreFile;
-    public final String keystorePassword;
+public record ServerProperties(String keystoreFile, String keystorePassword) {
+    public static final String FILENAME = "server.properties";
 
-    public ServerProperties() throws IOException, IllegalArgumentException {
+    public static ServerProperties fromDisk() throws IOException, IllegalArgumentException {
         Properties properties = new Properties();
 
-        try (InputStream input = new FileInputStream("server.properties")) {
+        try (InputStream input = new FileInputStream(FILENAME)) {
             properties.load(input);
         }
 
-        keystoreFile = properties.getProperty("keystore.file");
-        keystorePassword = properties.getProperty("keystore.password");
+        String keystoreFile = properties.getProperty("keystore.file");
+        String keystorePassword = properties.getProperty("keystore.password");
 
         if (keystoreFile == null || keystorePassword == null || keystoreFile.isBlank() || keystorePassword.isBlank())
             throw new IllegalArgumentException("missing or blank property in server.properties");
 
         if (!new File(keystoreFile).isFile())
             throw new IllegalArgumentException("keystore.file '" + keystoreFile + "' is not a valid file");
+
+        return new ServerProperties(keystoreFile, keystorePassword);
     }
 }
