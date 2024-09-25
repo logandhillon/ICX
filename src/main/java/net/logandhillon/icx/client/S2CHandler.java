@@ -42,12 +42,19 @@ public class S2CHandler extends Thread {
         while (ICXClient.isConnected()) {
             if (!ICXClient.isConnected()) break;
             try {
+                ChatView.updateRoomName();
+                
                 String msg;
                 if ((msg = reader.readLine()) != null) {
                     ICXPacket packet = ICXPacket.decode(msg);
                     LOG.debug("Incoming {} packet from {}", packet.command(), packet.sender());
 
                     switch (packet.command()) {
+                        case SRV_HELLO -> {
+                            ICXClient.connectedRoomName = packet.content();
+                            ChatView.updateRoomName();
+                            LOG.info("Server room name is {}", packet.content());
+                        }
                         case SRV_KICK -> Platform.runLater(() -> UI.reloadScene(new Scene(new LoginView()), () -> {
                             Alert alert = new Alert(Alert.AlertType.WARNING);
                             alert.setTitle("Kicked from server");

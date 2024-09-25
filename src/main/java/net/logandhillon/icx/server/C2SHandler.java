@@ -39,7 +39,7 @@ public class C2SHandler extends Thread {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, "SERVER", "Connected"));
+            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, "SERVER", ICXServer.PROPERTIES.roomName()));
 
             String msg;
             while ((msg = reader.readLine()) != null) {

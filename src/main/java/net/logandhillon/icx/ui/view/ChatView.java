@@ -1,5 +1,6 @@
 package net.logandhillon.icx.ui.view;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,6 +24,7 @@ import java.io.IOException;
 
 public class ChatView extends VBox {
     private static final VBox MESSAGES = new VBox();
+    private static final Label ROOM_NAME = new Label();
 
     public ChatView() {
         setSpacing(8);
@@ -66,7 +68,9 @@ public class ChatView extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        return new HBox(new VBox(screenName, new Label(ICXClient.getServerAddr().getHostString())), spacer, leaveBtn);
+        updateRoomName();
+
+        return new HBox(new VBox(screenName, ROOM_NAME), spacer, leaveBtn);
     }
 
     private static HBox getMsgBox() {
@@ -114,5 +118,9 @@ public class ChatView extends VBox {
 
     public static void postAlert(String alert) {
         MESSAGES.getChildren().add(new MessageAlertComponent(alert));
+    }
+
+    public static void updateRoomName() {
+        Platform.runLater(() -> ROOM_NAME.setText(ICXClient.connectedRoomName != null ? ICXClient.connectedRoomName : ICXClient.getServerAddr().getHostString()));
     }
 }

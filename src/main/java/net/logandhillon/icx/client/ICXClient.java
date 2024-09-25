@@ -25,6 +25,8 @@ public class ICXClient {
     private static PrintWriter writer;
     private static BufferedReader reader;
 
+    public static String connectedRoomName = null;
+
     // trust all certificates
     private static final TrustManager[] TRUST_MANAGER = new TrustManager[]{
             new X509TrustManager() {

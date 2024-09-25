@@ -1,6 +1,5 @@
 package net.logandhillon.icx.server;
 
-import org.apache.logging.log4j.core.jmx.Server;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
