@@ -82,7 +82,7 @@ public class ICXClient {
     public static void uploadFile(File file) {
         LOG.debug("Uploading {}", file.getName());
         try {
-            send(ICXPacket.Command.UPLOAD, ICXMultimediaPayload.fromFile(file).encode());
+            send(ICXPacket.Command.FILE_INF, ICXMultimediaPayload.fromFile(file).encode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

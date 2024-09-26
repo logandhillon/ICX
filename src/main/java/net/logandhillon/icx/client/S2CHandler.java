@@ -68,7 +68,7 @@ public class S2CHandler extends Thread {
                         }
                         case SEND ->
                                 Platform.runLater(() -> ChatView.postMessage(packet.snvs().name(), packet.content()));
-                        case UPLOAD ->
+                        case FILE_INF ->
                                 Platform.runLater(() -> ChatView.postMMP(packet.snvs().name(), ICXMultimediaPayload.decode(packet.content())));
                         case JOIN ->
                                 Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.snvs().name())));

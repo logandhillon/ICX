@@ -7,7 +7,7 @@ public record ICXPacket(ICXPacket.Command command, SNVS.Token snvs, String conte
     private static final String VER = "ICX/0.9";
 
     public enum Command {
-        JOIN, EXIT, SEND, UPLOAD,
+        JOIN, EXIT, SEND, FILE_INF, FILE_DAT,
         SRV_ERR, SRV_HELLO, SRV_KICK
     }
 

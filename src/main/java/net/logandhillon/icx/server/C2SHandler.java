@@ -73,7 +73,7 @@ public class C2SHandler extends Thread {
                                 throw new RuntimeException("Message content cannot be blank");
                             LOG.info("{}: '{}'", packet.snvs().name(), packet.content());
                         }
-                        case UPLOAD ->
+                        case FILE_INF ->
                                 ICXMultimediaPayload.parseOrThrow(packet.content()); // verify packet integrity or throw
                         case EXIT -> {
                             LOG.info("Received EXIT command");
