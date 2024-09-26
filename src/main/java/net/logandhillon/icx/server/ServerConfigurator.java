@@ -1,5 +1,6 @@
 package net.logandhillon.icx.server;
 
+import net.logandhillon.icx.common.SNVS;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
@@ -28,13 +29,7 @@ public class ServerConfigurator {
 
         // generate keystore password
         System.out.print("Generating secure key... ");
-        SecureRandom random = new SecureRandom();
-        char[] password = new char[32];
-
-        for (int i = 0; i < 32; i++) {
-            int randomAscii = 32 + random.nextInt(126 - 32 + 1);
-            password[i] = (char) randomAscii;
-        }
+        char[] password = SNVS.genToken().toCharArray();  // just use the already existing SNVS token generation system
         System.out.println("[OK]");
 
         try {

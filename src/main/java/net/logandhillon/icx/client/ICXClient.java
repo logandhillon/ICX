@@ -2,6 +2,7 @@ package net.logandhillon.icx.client;
 
 import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
+import net.logandhillon.icx.common.SNVS;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
@@ -19,7 +20,7 @@ import java.security.cert.X509Certificate;
 
 public class ICXClient {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICXClient.class);
-    private static String screenName;
+    private static SNVS.Token snvs;
     private static InetSocketAddress serverAddr;
     private static SSLSocket socket;
     private static PrintWriter writer;
@@ -42,11 +43,11 @@ public class ICXClient {
             }
     };
 
-    public static void connect(String _screenName, InetAddress _serverAddr) throws IOException {
-        screenName = _screenName;
-        serverAddr = new InetSocketAddress(_serverAddr, 195);
+    public static void connect(String screenName, InetAddress serverAddr) throws IOException {
+        snvs = new SNVS.Token(screenName, SNVS.genToken());
+        ICXClient.serverAddr = new InetSocketAddress(serverAddr, 195);
 
-        LOG.info("Connecting to {} as {}", serverAddr, screenName);
+        LOG.info("Connecting to {} as {}", ICXClient.serverAddr, snvs);
 
         try {
             SSLContext context = SSLContext.getInstance("TLS");
@@ -55,7 +56,7 @@ public class ICXClient {
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        socket.connect(serverAddr, 5000);
+        socket.connect(ICXClient.serverAddr, 5000);
 
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -75,7 +76,7 @@ public class ICXClient {
 
     public static void send(ICXPacket.Command command, String content) {
         LOG.debug("Sending {} packet", command);
-        writer.println(new ICXPacket(command, screenName, content).encode());
+        writer.println(new ICXPacket(command, snvs, content).encode());
     }
 
     public static void uploadFile(File file) {
@@ -87,8 +88,8 @@ public class ICXClient {
         }
     }
 
-    public static String getScreenName() {
-        return screenName;
+    public static SNVS.Token getSnvs() {
+        return snvs;
     }
 
     public static InetSocketAddress getServerAddr() {

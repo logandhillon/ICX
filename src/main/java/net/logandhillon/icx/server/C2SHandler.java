@@ -2,6 +2,7 @@ package net.logandhillon.icx.server;
 
 import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
+import net.logandhillon.icx.common.SNVS;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
@@ -15,7 +16,7 @@ public class C2SHandler extends Thread {
     private final Socket socket;
     private final InetAddress addr;
     private PrintWriter writer;
-    private String sender;
+    private SNVS.Token snvs;
     private boolean isFresh = true;
 
     public C2SHandler(Socket socket) {
@@ -39,7 +40,7 @@ public class C2SHandler extends Thread {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, "SERVER", ICXServer.PROPERTIES.roomName()));
+            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, NameRegistry.SERVER, ICXServer.PROPERTIES.roomName()));
 
             String msg;
             while ((msg = reader.readLine()) != null) {
@@ -52,25 +53,25 @@ public class C2SHandler extends Thread {
                         try {
                             if (packet.command() != ICXPacket.Command.JOIN)
                                 throw new RuntimeException("You are not registered!");
-                            ICXServer.NAME_REGISTRY.registerName(packet.sender(), addr);
+                            ICXServer.NAME_REGISTRY.registerName(packet.snvs(), addr);
                             ICXServer.CLIENT_WRITERS.add(writer);
                             isFresh = false;
-                            this.sender = packet.sender();
-                        } catch (RuntimeException ex) {
-                            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_KICK, "SERVER", ex.getMessage()));
+                            this.snvs = packet.snvs();
+                        } catch (Exception ex) {
+                            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_KICK, NameRegistry.SERVER, ex.getMessage()));
                             socket.close();
                         }
                     }
 
                     // throw error if name cannot be verified to that IP
-                    if (!this.sender.equals(packet.sender()) || !ICXServer.NAME_REGISTRY.verifyName(packet.sender(), addr))
-                        throw new RuntimeException("Failed to verify name registration");
+                    if (!this.snvs.equals(packet.snvs()) || !ICXServer.NAME_REGISTRY.verifyName(packet.snvs(), addr))
+                        throw new RuntimeException("SNVS failed");
 
                     switch (packet.command()) {
                         case SEND -> {
                             if (packet.content().isBlank())
                                 throw new RuntimeException("Message content cannot be blank");
-                            LOG.info("{}: '{}'", packet.sender(), packet.content());
+                            LOG.info("{}: '{}'", packet.snvs().name(), packet.content());
                         }
                         case UPLOAD ->
                                 ICXMultimediaPayload.parseOrThrow(packet.content()); // verify packet integrity or throw
@@ -81,9 +82,9 @@ public class C2SHandler extends Thread {
                         case SRV_ERR -> throw new RuntimeException("Illegal command");
                     }
 
-                    ICXServer.broadcast(packet);
-                } catch (RuntimeException e) {
-                    sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_ERR, "SERVER", e.getMessage()));
+                    ICXServer.broadcast(packet.stripToken());
+                } catch (Exception e) {
+                    sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_ERR, NameRegistry.SERVER, e.getMessage()));
                 }
             }
         } catch (SocketException e) {
@@ -92,9 +93,9 @@ public class C2SHandler extends Thread {
             LOG.error("Error handling client: {}", e.getMessage());
         } finally {
             try {
-                ICXServer.NAME_REGISTRY.releaseName(this.sender);
+                ICXServer.NAME_REGISTRY.releaseName(this.snvs);
                 ICXServer.CLIENT_WRITERS.remove(this.writer);
-                ICXServer.broadcast(new ICXPacket(ICXPacket.Command.EXIT, this.sender, null));
+                ICXServer.broadcast(new ICXPacket(ICXPacket.Command.EXIT, this.snvs, null));
                 socket.close();
                 LOG.info("Disconnected");
             } catch (IOException e) {

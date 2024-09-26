@@ -39,7 +39,7 @@ public class ICXServer {
     }
 
     public static void start() {
-        NAME_REGISTRY.registerName("SERVER", InetAddress.getLoopbackAddress());
+        NAME_REGISTRY.registerName(NameRegistry.SERVER, InetAddress.getLoopbackAddress());
         int port = 195; // ooh, fun fact port 194 is IRC, so port 195 is a homage to that
 
         System.setProperty("javax.net.ssl.keyStore", ICXServer.PROPERTIES.keystoreFile());

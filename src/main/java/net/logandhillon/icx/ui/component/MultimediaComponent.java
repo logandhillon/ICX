@@ -35,7 +35,7 @@ public class MultimediaComponent extends VBox {
             getChildren().addAll(header);
         }
 
-        Pos alignment = sender.equals(ICXClient.getScreenName()) ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT;
+        Pos alignment = sender.equals(ICXClient.getSnvs().name()) ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT;
 
         getChildren().add(switch (mmp.fileType()) {
             case IMAGE -> new ImagePreviewComponent(mmp.content());

@@ -23,7 +23,7 @@ public class MessageComponent extends VBox {
 
         getChildren().add(new Label(message));
 
-        if (sender.equals(ICXClient.getScreenName())) setAlignment(Pos.CENTER_RIGHT);
+        if (sender.equals(ICXClient.getSnvs().name())) setAlignment(Pos.CENTER_RIGHT);
         else setAlignment(Pos.CENTER_LEFT);
 
         lastSender = sender;

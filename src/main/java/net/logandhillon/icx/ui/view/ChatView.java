@@ -30,7 +30,7 @@ public class ChatView extends VBox {
         setSpacing(8);
         setFillWidth(true);
 
-        Label screenName = new Label(ICXClient.getScreenName());
+        Label screenName = new Label(ICXClient.getSnvs().name());
         screenName.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 16));
 
         HBox header = getHeader(screenName);

@@ -43,11 +43,11 @@ public class S2CHandler extends Thread {
             if (!ICXClient.isConnected()) break;
             try {
                 ChatView.updateRoomName();
-                
+
                 String msg;
                 if ((msg = reader.readLine()) != null) {
                     ICXPacket packet = ICXPacket.decode(msg);
-                    LOG.debug("Incoming {} packet from {}", packet.command(), packet.sender());
+                    LOG.debug("Incoming {} packet from {}", packet.command(), packet.snvs().name());
 
                     switch (packet.command()) {
                         case SRV_HELLO -> {
@@ -55,20 +55,25 @@ public class S2CHandler extends Thread {
                             ChatView.updateRoomName();
                             LOG.info("Server room name is {}", packet.content());
                         }
-                        case SRV_KICK -> Platform.runLater(() -> UI.reloadScene(new Scene(new LoginView()), () -> {
-                            Alert alert = new Alert(Alert.AlertType.WARNING);
-                            alert.setTitle("Kicked from server");
-                            alert.setHeaderText("You have been kicked from " + ICXClient.getServerAddr());
-                            alert.setContentText("Reason: " + packet.content());
-                            alert.showAndWait();
-                        }));
-                        case SEND -> Platform.runLater(() -> ChatView.postMessage(packet.sender(), packet.content()));
+                        case SRV_KICK -> {
+                            Platform.runLater(() -> UI.reloadScene(new Scene(new LoginView()), () -> {
+                                Alert alert = new Alert(Alert.AlertType.WARNING);
+                                alert.setTitle("Kicked from server");
+                                alert.setHeaderText("You have been kicked from " + ICXClient.getServerAddr());
+                                alert.setContentText("Reason: " + packet.content());
+                                alert.showAndWait();
+                            }));
+                            ICXClient.disconnect();
+                            throw new SocketException("Socket closed");
+                        }
+                        case SEND ->
+                                Platform.runLater(() -> ChatView.postMessage(packet.snvs().name(), packet.content()));
                         case UPLOAD ->
-                                Platform.runLater(() -> ChatView.postMMP(packet.sender(), ICXMultimediaPayload.decode(packet.content())));
+                                Platform.runLater(() -> ChatView.postMMP(packet.snvs().name(), ICXMultimediaPayload.decode(packet.content())));
                         case JOIN ->
-                                Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.sender())));
+                                Platform.runLater(() -> ChatView.postAlert(String.format("Welcome, %s!", packet.snvs().name())));
                         case EXIT ->
-                                Platform.runLater(() -> ChatView.postAlert(String.format("Farewell, %s!", packet.sender())));
+                                Platform.runLater(() -> ChatView.postAlert(String.format("Farewell, %s!", packet.snvs().name())));
                     }
                 }
             } catch (SSLException e) {
@@ -79,7 +84,7 @@ public class S2CHandler extends Thread {
                 showError("An error disrupted your connection: " + e.getMessage(), "Connection Error");
                 return;
             } catch (Exception e) {
-                showError("Failed to parse incoming packet: " + e.getMessage(), "Unknown Error");
+                showError("Failed to parse incoming packet: " + e.getMessage(), e.getClass().getName());
                 return;
             }
         }
