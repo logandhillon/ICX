@@ -6,6 +6,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import net.logandhillon.icx.common.ICXMultimediaPayload;
 import net.logandhillon.icx.common.ICXPacket;
+import net.logandhillon.icx.server.ChatLogger;
+import net.logandhillon.icx.server.NameRegistry;
 import net.logandhillon.icx.ui.UI;
 import net.logandhillon.icx.ui.view.ChatView;
 import net.logandhillon.icx.ui.view.LoginView;
@@ -16,6 +18,7 @@ import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Objects;
 import java.util.Optional;
 
 public class S2CHandler extends Thread {
@@ -51,9 +54,18 @@ public class S2CHandler extends Thread {
 
                     switch (packet.command()) {
                         case SRV_HELLO -> {
-                            ICXClient.connectedRoomName = packet.content();
+                            String[] payload = packet.content().split("\035");
+                            ICXClient.connectedRoomName = payload[0];
                             ChatView.updateRoomName();
                             LOG.info("Server room name is {}", packet.content());
+
+                            if (payload.length < 2) break;
+                            LOG.info("Parsing chat history");
+                            for (ChatLogger.Message msgLog : ChatLogger.parseLogs(payload[1])) {
+                                if (Objects.equals(msgLog.sender(), NameRegistry.SERVER.name()))
+                                    Platform.runLater(() -> ChatView.postAlert(msgLog.message()));
+                                else Platform.runLater(() -> ChatView.postMessage(msgLog.sender(), msgLog.message()));
+                            }
                         }
                         case SRV_KICK -> {
                             Platform.runLater(() -> UI.reloadScene(new Scene(new LoginView()), () -> {

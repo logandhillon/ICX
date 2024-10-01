@@ -8,9 +8,9 @@ import org.apache.logging.log4j.core.LoggerContext;
 
 public class ICX {
     private static final Logger LOG = LoggerContext.getContext().getLogger(ICX.class);
+    private static boolean isServer = false;
 
     public static void main(String[] args) {
-        boolean isServer = false;
         for (String arg : args)
             switch (arg) {
                 case "-h", "--help" -> printHelp();
@@ -39,5 +39,9 @@ public class ICX {
                     -h, --help          show this help message and exit
                     -s, --server        host an ICX server instead of launching a client
                     -i, --setup         re-run initial config for ICX servers""");
+    }
+
+    public static boolean isServer() {
+        return isServer;
     }
 }

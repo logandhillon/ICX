@@ -1,5 +1,6 @@
 package net.logandhillon.icx.server;
 
+import net.logandhillon.icx.ICX;
 import net.logandhillon.icx.common.ICXPacket;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -22,7 +23,7 @@ public class ICXServer {
 
     static {
         ServerProperties properties = null;
-        try {
+        if (ICX.isServer()) try {
             properties = ServerProperties.fromDisk();
         } catch (Exception e) {
             LOG.fatal("ICX server could not be started: {}", e.getMessage());

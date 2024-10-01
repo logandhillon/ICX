@@ -40,7 +40,9 @@ public class C2SHandler extends Thread {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO, NameRegistry.SERVER, ICXServer.PROPERTIES.roomName()));
+            sendPacket(writer, new ICXPacket(ICXPacket.Command.SRV_HELLO,
+                    NameRegistry.SERVER,
+                    ICXServer.PROPERTIES.roomName() + "\035" + ChatLogger.encodeLogs()));
 
             String msg;
             while ((msg = reader.readLine()) != null) {
@@ -71,12 +73,16 @@ public class C2SHandler extends Thread {
                         case SEND -> {
                             if (packet.content().isBlank())
                                 throw new RuntimeException("Message content cannot be blank");
-                            LOG.info("{}: '{}'", packet.snvs().name(), packet.content());
+                            ChatLogger.log(packet.snvs().name(), packet.content());
                         }
-                        case FILE_INF ->
-                                ICXMultimediaPayload.parseOrThrow(packet.content()); // verify packet integrity or throw
+                        case FILE_INF -> {
+                            ICXMultimediaPayload.parseOrThrow(packet.content()); // verify packet integrity or throw
+                            ChatLogger.log(packet.snvs().name(), "[ Media unavailable ]");
+                        }
+                        case JOIN -> ChatLogger.logAlert(String.format("Welcome, %s!", packet.snvs().name()));
                         case EXIT -> {
-                            LOG.info("Received EXIT command");
+                            ChatLogger.logAlert(String.format("Farewell, %s!", packet.snvs().name()));
+                            LOG.debug("Received EXIT command");
                             socket.close();
                         }
                         case SRV_ERR -> throw new RuntimeException("Illegal command");
